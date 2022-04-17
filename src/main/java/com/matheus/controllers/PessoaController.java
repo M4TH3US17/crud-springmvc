@@ -7,15 +7,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.matheus.model.Pessoa;
-import com.matheus.repository.PessoaRepository;
+import com.matheus.services.PessoaService;
 
 @Controller
 public class PessoaController {
 
-	private PessoaRepository repository;
+	private PessoaService service;
 	
-	public PessoaController(PessoaRepository repository) {
-		this.repository = repository;
+	public PessoaController(PessoaService service) {
+		this.service = service;
 	}
 	
 	@GetMapping("/cadastro")
@@ -26,28 +26,19 @@ public class PessoaController {
 	
 	@PostMapping("/save")
 	public ModelAndView save(Pessoa pessoa) {
-		ModelAndView view = new ModelAndView("redirect:/");
-		repository.save(pessoa);
+		ModelAndView view = service.save(pessoa);
 		return view;
 	}
 	
 	@GetMapping("/update/{id}")
 	public ModelAndView update(@PathVariable("id") Long id) {
-		if(repository.existsById(id) == false) {
-			throw new IllegalArgumentException("Pessoa com id " + id + " não existe.");
-		}
-		ModelAndView view = new ModelAndView("pessoa/edit");
-		view.addObject("pessoaobj", repository.findById(id).get());
+		ModelAndView view = service.update(id);
 		return view;
 	}
 	
 	@GetMapping("/delete/{id}")
 	public ModelAndView delete(@PathVariable Long id) {
-		if(repository.existsById(id) == false) {
-			throw new IllegalArgumentException("Pessoa com id " + id + " não existe.");
-		}
-		ModelAndView view = new ModelAndView("redirect:/");
-		repository.deleteById(id);
+		ModelAndView view = service.delete(id);
 		return view;
 	}
 }
